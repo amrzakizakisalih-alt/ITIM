@@ -9,7 +9,6 @@ from domain.exercises.document_processor import DocumentProcessor
 from domain.exercises.exercise_generator import ExerciseGenerator
 from core.profile_manager import ProfileManager
 from domain.math.step_tracker import StepTracker
-from input.gesture_recognizer import GestureRecognizer
 from input.stroke_analyzer import StrokeAnalyzer
 from input.stroke_buffer import StrokeBuffer
 from domain.math.math_expert import MathExpert
@@ -34,7 +33,6 @@ class SessionState:
         self.detected_exercises = []
         self.profile_manager = ProfileManager(user_id)
         self.step_tracker = StepTracker(self.actr.mathExpert)
-        self.gesture_recognizer = GestureRecognizer()
         self.stroke_analyzer = StrokeAnalyzer()
         self.ocr_task = None
         self.ocr_requests: dict = {}       # id -> asyncio.Future (capture full-page)

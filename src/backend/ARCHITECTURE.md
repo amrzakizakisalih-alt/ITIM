@@ -67,7 +67,6 @@ tutor/        →  Orchestration pédagogique
 |---------|------|
 | `stroke_buffer.py` | Accumulation et clustering spatial des strokes. |
 | `stroke_analyzer.py` | Détection de frustration via l'analyse des strokes. |
-| `gesture_recognizer.py` | Reconnaissance de gestes manuscrits (check ✓, question ?). |
 
 ### `tutor/` — Orchestration Pédagogique
 
@@ -77,7 +76,7 @@ tutor/        →  Orchestration pédagogique
 
 ## Flux de données principal
 
-1. **Strokes manuscrits** → `input.stroke_buffer` + `input.stroke_analyzer` + `input.gesture_recognizer`
+1. **Strokes manuscrits** → `input.stroke_buffer` + `input.stroke_analyzer`
    → Auto-OCR différé (`domain.math.math_processor` / `core.llm_client`) → `domain.math.step_tracker`
 2. **Messages texte** → `tutor.tutor` → parsing d'intention → `domain.cognitive.act_r` (AST + buggy rules)
    → réponse LLM contextualisée via `core.llm_client`

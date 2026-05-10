@@ -19,7 +19,6 @@ from domain.cognitive.act_r import ActR
 from tutor.tutor import Tutor
 from core.llm_client import LLMClient
 from input.stroke_buffer import StrokeBuffer
-from input.gesture_recognizer import GestureRecognizer
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -53,61 +52,6 @@ class TestStrokeBuffer:
         buf.add({"tool": "pen", "points": [{"x": 1, "y": 1}]})
         buf.clear()
         assert len(buf) == 0
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# GestureRecognizer
-# ═════════════════════════════════════════════════════════════════════════════
-
-class TestGestureRecognizer:
-    @pytest.mark.xfail(reason="GestureRecognizer._is_circle not implemented — dead code")
-    def test_mono_stroke_circle(self):
-        gr = GestureRecognizer()
-        # Simple circle: points looping around a center
-        import math
-        points = []
-        for i in range(20):
-            angle = 2 * math.pi * i / 20
-            points.append({"x": 100 + 30 * math.cos(angle), "y": 100 + 30 * math.sin(angle)})
-        gesture = gr.feed_stroke({"points": points})
-        assert gesture == "circle"
-
-    @pytest.mark.xfail(reason="GestureRecognizer._is_circle not implemented — dead code")
-    def test_multi_stroke_circle(self):
-        gr = GestureRecognizer()
-        import math
-        # Circle in 2 strokes (half-circles)
-        points1 = []
-        for i in range(10):
-            angle = math.pi * i / 10
-            points1.append({"x": 100 + 30 * math.cos(angle), "y": 100 + 30 * math.sin(angle)})
-
-        points2 = []
-        for i in range(10):
-            angle = math.pi + math.pi * i / 10
-            points2.append({"x": 100 + 30 * math.cos(angle), "y": 100 + 30 * math.sin(angle)})
-
-        # First stroke alone should not match
-        g1 = gr.feed_stroke({"points": points1})
-        assert g1 is None
-
-        # Second stroke, with the first one still in the buffer (800ms window)
-        g2 = gr.feed_stroke({"points": points2})
-        assert g2 == "circle"
-
-    @pytest.mark.xfail(reason="GestureRecognizer._is_circle not implemented — dead code")
-    def test_debounce(self):
-        gr = GestureRecognizer()
-        import math
-        points = []
-        for i in range(20):
-            angle = 2 * math.pi * i / 20
-            points.append({"x": 100 + 30 * math.cos(angle), "y": 100 + 30 * math.sin(angle)})
-        g1 = gr.feed_stroke({"points": points})
-        assert g1 == "circle"
-        # Same gesture immediately after → debounce
-        g2 = gr.feed_stroke({"points": points})
-        assert g2 is None
 
 
 # ═════════════════════════════════════════════════════════════════════════════

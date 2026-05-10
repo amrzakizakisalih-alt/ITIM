@@ -238,16 +238,6 @@ export default function ChatPanel({
       ]);
     }
 
-    if (wsLastMessage.type === "gesture_response") {
-      setMessages((m) => [
-        ...m,
-        {
-          text: wsLastMessage.text,
-          role: "assistant",
-          gesture: wsLastMessage.gesture,
-        },
-      ]);
-    }
   }, [wsLastMessage]);
 
   const addMessage = (text, role = "assistant") => {

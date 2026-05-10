@@ -266,24 +266,6 @@ def register_websocket_handlers(
                         _stroke_debounce(websocket, state)
                     )
 
-                    gesture = state.gesture_recognizer.feed_stroke(stroke)
-                    if gesture:
-                        logger.info("[GESTURE] Detected: %s", gesture)
-                        resp = state.gesture_recognizer.get_response(gesture)
-                        if gesture == "check":
-                            resp["text"] = "✅ I'll check your answer! Click 🧮 Check when you're ready."
-                        elif gesture == "question":
-                            resp["text"] = "❓ Need a hint? Here's a clue: " + (
-                                state.step_tracker.exercise.get("hint", "Think step by step.")
-                                if state.step_tracker.exercise else "Think step by step."
-                            )
-                        await websocket.send_json({
-                            "type": "gesture_response",
-                            "gesture": gesture,
-                            "text": resp["text"],
-                            "role": "assistant",
-                        })
-
                     # Deferred auto-OCR — simplified: 1 image, 1 vision call
                     if state.ocr_task:
                         state.ocr_task.cancel()
@@ -761,7 +743,6 @@ def register_websocket_handlers(
                         state.ocr_task = None
                     state.stroke_buffer.clear()
                     state.stroke_analyzer.reset()
-                    state.gesture_recognizer.reset_accumulator()
                     state.step_tracker.reset()
                     state.tutor.reset_session()
                     state.actr.studentModel.reset_behavioral_counters()
