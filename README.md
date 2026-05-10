@@ -1,6 +1,6 @@
 # ITIM — Intelligent Tutoring System for Mathematics
 
-ITIM is an AI-powered Intelligent Tutoring System (ITS) designed for university, high school and middle school students. It combines a digital handwriting notebook with a conversational AI tutor that understands mathematics, monitors student behavior, and provides step-by-step guidance without giving away answers.
+ITIM is an AI-powered Intelligent Tutoring System (ITS) designed for university, high school and middle school students. It combines a digital handwriting notebook with a conversational AI tutor that understands mathematics, monitors student behavior, and provides step-by-step guidance.
 
 ---
 
