@@ -1,0 +1,24 @@
+# ── Core backend ──
+fastapi
+uvicorn[standard]
+
+# ── Math pipeline ──
+sympy
+Pillow
+pix2tex
+latex2sympy2
+
+# ── LLM integration ──
+groq
+python-dotenv
+
+# ── Speech-to-Text ──
+SpeechRecognition
+python-multipart
+# Optional: pyaudio (requires system portaudio headers) for real-time microphone
+# sudo apt-get install portaudio19-dev && pip install pyaudio
+
+# ── Testing ──
+pytest
+pytest-asyncio
+wordninja

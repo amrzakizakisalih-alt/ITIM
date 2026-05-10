@@ -1,7 +1,17 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { T } from "./constants";
 
-export default function ImportModal({ file, onClose, onEmbed }) {
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+export default function ImportModal({ file, onClose, onEmbed, onFeedAI }) {
   const [dataUrl, setDataUrl]   = useState(null);
   const [pdfPages, setPdfPages] = useState(null);
   const [counting, setCounting] = useState(false);
@@ -22,21 +32,8 @@ export default function ImportModal({ file, onClose, onEmbed }) {
     setCounting(true);
     const run = async () => {
       try {
-        if (!window.pdfjsLib) {
-          await new Promise((res, rej) => {
-            const s = document.createElement("script");
-            s.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-            s.onload = res; s.onerror = rej;
-            document.head.appendChild(s);
-          });
-          window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-        }
-        const base64 = dataUrl.split(",")[1];
-        const binary = atob(base64);
-        const bytes  = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-        const pdf = await window.pdfjsLib.getDocument({ data: bytes }).promise;
+        const { getPdfDocument } = await import("./pdfService.js");
+        const pdf = await getPdfDocument(dataUrl);
         setPdfPages(pdf.numPages);
       } catch { setPdfPages("?"); }
       finally { setCounting(false); }
@@ -47,16 +44,17 @@ export default function ImportModal({ file, onClose, onEmbed }) {
   const openNewTab = () => {
     if (!dataUrl) return;
     const w = window.open("", "_blank");
+    const safeName = escapeHtml(file.name);
     if (isPdf) {
       w.document.write(
-        `<html><head><title>${file.name}</title></head>` +
+        `<html><head><title>${safeName}</title></head>` +
         `<body style="margin:0;background:#1a1a2e">` +
         `<embed src="${dataUrl}" type="application/pdf" width="100%" height="100%" style="min-height:100vh">` +
         `</body></html>`
       );
     } else {
       w.document.write(
-        `<html><head><title>${file.name}</title></head>` +
+        `<html><head><title>${safeName}</title></head>` +
         `<body style="margin:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;min-height:100vh">` +
         `<img src="${dataUrl}" style="max-width:100%;max-height:100vh;object-fit:contain">` +
         `</body></html>`
@@ -71,6 +69,11 @@ export default function ImportModal({ file, onClose, onEmbed }) {
     onClose();
   };
 
+  const feedAI = () => {
+    onFeedAI?.(file, dataUrl);
+    onClose();
+  };
+
   const fmt = (b) => b > 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.round(b / 1024)} KB`;
 
   if (!file) return null;
@@ -81,8 +84,17 @@ export default function ImportModal({ file, onClose, onEmbed }) {
       ? `+ ${pdfPages ?? "?"} page${pdfPages !== 1 ? "s" : ""} will be added`
       : "+ 1 page will be added";
 
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="import-modal-title"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       style={{
         position: "fixed", inset: 0, zIndex: 1000,
@@ -106,7 +118,7 @@ export default function ImportModal({ file, onClose, onEmbed }) {
         }}>
           <span style={{ fontSize: 24 }}>{isPdf ? "📄" : "🖼️"}</span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ color: T.textPri, fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <div id="import-modal-title" style={{ color: T.textPri, fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {file.name}
             </div>
             <div style={{ color: T.textHint, fontSize: 11, marginTop: 3, display: "flex", gap: 10 }}>
@@ -180,6 +192,16 @@ export default function ImportModal({ file, onClose, onEmbed }) {
             disabled={!dataUrl || counting}
             onClick={embedInDoc}
             variant="primary"
+          />
+
+          {/* Feed AI */}
+          <ActionCard
+            icon="🧠"
+            title="Feed AI"
+            sub="Analyze & generate exercises"
+            disabled={!dataUrl || counting}
+            onClick={feedAI}
+            variant="secondary"
           />
 
           {/* Cancel */}

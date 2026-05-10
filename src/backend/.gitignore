@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environnement
+.env
+.venv/
+venv/
+
+# Bases de données & logs générés
+*.db
+*.log
+profiles/*.migrated
+
+# Cache tests
+.pytest_cache/
+
+# IDEs
+.vscode/
+.idea/

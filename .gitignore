@@ -1,0 +1,31 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ── Environnement ──
+.env
+.venv/
+venv/
+
+# ── Bases de données & logs ──
+*.db
+*.log
+profiles/
+
+# ── Certificats SSL ──
+*.pem
+
+# ── Cache tests ──
+.pytest_cache/
+
+# ── IDEs ──
+.vscode/
+.idea/
+
+# ── Node / Frontend ──
+node_modules/
+dist/
+dist-ssr/
+*.local
