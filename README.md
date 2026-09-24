@@ -159,3 +159,9 @@ Then start the backend — it will automatically serve `index.html` for SPA rout
 
 This project is developed for academic research purposes.
 Authors : Amr Zaki Salih | Yagiz Efe Acar
+
+---
+
+## Institution
+
+Koç Universitesi
